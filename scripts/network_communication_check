@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -u
+
+targets=(
+  "192.168.1.15"
+  "192.168.1.11"
+)
+
+reachable=0
+
+echo "Checking network communication..."
+echo
+
+for target in "${targets[@]}"; do
+  if ping -c 1 -W 1 "$target" >/dev/null 2>&1; then
+    printf '[OK]   %s reachable\n' "$target"
+    reachable=$((reachable + 1))
+  else
+    printf '[FAIL] %s unreachable\n' "$target"
+  fi
+done
+
+echo
+printf 'Result: %d of %d targets reachable\n' "$reachable" "${#targets[@]}"
+
+if [[ "$reachable" -eq "${#targets[@]}" ]]; then
+  exit 0
+fi
+
+exit 1
